@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registro Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    /* Light — warm paper ground, ink text, institutional blue accent */
+    --paper:        #f6f5f1;
+    --surface:      #ffffff;
+    --surface-2:    #f0efe9;
+    --ink:          #1b1e26;
+    --ink-soft:     #565a66;
+    --ink-faint:    #8b8f9a;
+    --line:         #dcdad2;
+    --line-strong:  #c6c3b8;
+    --accent:       #2f57c9;
+    --accent-ink:   #ffffff;
+    --accent-soft:  #e6ebf9;
+    --good:         #1f7a5c;
+    --good-soft:    #e0f0e9;
+    --danger:       #b23c3c;
+    --danger-soft:  #f6e3e1;
+    --shadow:       0 1px 2px rgba(27,30,38,.06), 0 8px 24px rgba(27,30,38,.08);
+    --radius:       10px;
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper:       #14161c;
+      --surface:     #1c1f27;
+      --surface-2:   #22262f;
+      --ink:         #e9e8e2;
+      --ink-soft:    #a6a9b2;
+      --ink-faint:   #71757f;
+      --line:        #2e323c;
+      --line-strong: #3d424e;
+      --accent:      #7d9bff;
+      --accent-ink:  #10131a;
+      --accent-soft: #23293c;
+      --good:        #5cc6a0;
+      --good-soft:   #1a2b26;
+      --danger:      #e0847e;
+      --danger-soft: #33211f;
+      --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:       #14161c;
+    --surface:     #1c1f27;
+    --surface-2:   #22262f;
+    --ink:         #e9e8e2;
+    --ink-soft:    #a6a9b2;
+    --ink-faint:   #71757f;
+    --line:        #2e323c;
+    --line-strong: #3d424e;
+    --accent:      #7d9bff;
+    --accent-ink:  #10131a;
+    --accent-soft: #23293c;
+    --good:        #5cc6a0;
+    --good-soft:   #1a2b26;
+    --danger:      #e0847e;
+    --danger-soft: #33211f;
+    --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid var(--line-strong);
+  }
+  .brand h1 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .brand p {
+    margin: .15rem 0 0;
+    color: var(--ink-soft);
+    font-size: .9rem;
+  }
+  .session { display: flex; align-items: center; gap: .6rem; font-size: .85rem; }
+  .session .who { color: var(--ink-soft); }
+  .session .who strong { color: var(--ink); }
+
+  /* ---------- Demo banner ---------- */
+  .demo-note {
+    margin-top: 1rem;
+    padding: .55rem .8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: .82rem;
+    color: var(--ink-soft);
+  }
+  .demo-note code {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: .05rem .3rem;
+    color: var(--ink);
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: .25rem; margin: 1.5rem 0 1rem; }
+  .tab {
+    appearance: none;
+    border: none;
+    background: none;
+    font: inherit;
+    font-weight: 500;
+    color: var(--ink-soft);
+    padding: .5rem .9rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  .tab:hover:not([aria-selected="true"]) { color: var(--ink); }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .9rem;
+    align-items: end;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+  }
+  .field { display: flex; flex-direction: column; gap: .3rem; }
+  .field label {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: .9rem; }
+  .filters .field { flex: 1 1 130px; }
+
+  select, input[type="search"], input[type="text"], input[type="number"], input[type="password"] {
+    font: inherit;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    padding: .48rem .6rem;
+    width: 100%;
+  }
+  select:focus-visible, input:focus-visible, button:focus-visible, .tab:focus-visible, .seg button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .seg button {
+    appearance: none;
+    border: none;
+    border-left: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: .85rem;
+    padding: .48rem .7rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .seg button:first-child { border-left: none; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+
+  button.primary {
+    appearance: none;
+    font: inherit;
+    font-weight: 500;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    padding: .5rem .9rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button.primary:hover { filter: brightness(1.06); }
+  button.ghost {
+    appearance: none;
+    font: inherit;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 7px;
+    padding: .5rem .9rem;
+    cursor: pointer;
+  }
+  button.ghost:hover { background: var(--surface-2); }
+  button.linkish {
+    appearance: none; border: none; background: none; font: inherit;
+    color: var(--accent); cursor: pointer; padding: 0;
+  }
+  button.linkish.danger { color: var(--danger); }
+  button.linkish:hover { text-decoration: underline; }
+
+  /* ---------- Summary chips ---------- */
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.1rem 0; }
+  .chip {
+    display: inline-flex; align-items: baseline; gap: .4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .3rem .7rem;
+    font-size: .82rem;
+    color: var(--ink-soft);
+  }
+  .chip b {
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--ink);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .chip.lead { background: var(--accent-soft); border-color: transparent; color: var(--ink); }
+
+  /* ---------- Table ---------- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); }
+  th, td { text-align: left; padding: .7rem .9rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  thead th {
+    background: var(--surface-2);
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--ink-faint);
+    font-weight: 600;
+    position: sticky; top: 0;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+  .badge {
+    display: inline-block;
+    font-size: .74rem;
+    font-weight: 500;
+    padding: .12rem .5rem;
+    border-radius: 5px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  td.acciones { display: flex; gap: .8rem; }
+  .empty { padding: 2.5rem 1rem; text-align: center; color: var(--ink-faint); }
+
+  /* ---------- Resumen view ---------- */
+  .resumen-grid { display: grid; gap: .8rem; }
+  .res-row {
+    display: grid;
+    grid-template-columns: 5.5rem 3rem 1fr 4.5rem;
+    align-items: center;
+    gap: .8rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: .7rem .9rem;
+    box-shadow: var(--shadow);
+  }
+  .res-row .g { font-family: "Spectral", serif; font-weight: 600; }
+  .res-row .s { font-family: "IBM Plex Mono", monospace; color: var(--ink-soft); font-size: .85rem; }
+  .bar-track { background: var(--surface-2); border-radius: 5px; height: 22px; position: relative; overflow: hidden; }
+  .bar-fill { background: var(--accent); height: 100%; border-radius: 5px; min-width: 2px; }
+  .bar-label {
+    position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
+    font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--ink);
+  }
+  .res-row .avg { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); font-size: .88rem; }
+  .res-row .avg b { color: var(--ink); font-weight: 500; }
+
+  /* ---------- Modal ---------- */
+  .backdrop {
+    position: fixed; inset: 0; background: rgba(10,12,16,.5);
+    display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50;
+  }
+  .backdrop[hidden] { display: none; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.28);
+    width: 100%; max-width: 420px;
+    padding: 1.5rem;
+  }
+  .modal h2 {
+    font-family: "Spectral", serif; font-weight: 600; font-size: 1.25rem;
+    margin: 0 0 1rem; text-wrap: balance;
+  }
+  .modal .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+  .modal .field { margin-bottom: .8rem; }
+  .modal .actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.2rem; }
+  .form-error {
+    background: var(--danger-soft); color: var(--danger);
+    border-radius: 7px; padding: .5rem .7rem; font-size: .85rem; margin-bottom: .9rem;
+  }
+  .form-error[hidden] { display: none; }
+  .hint { font-size: .78rem; color: var(--ink-faint); margin: .2rem 0 0; }
+
+  footer {
+    margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+    font-size: .8rem; color: var(--ink-faint);
+  }
+  footer a { color: var(--accent); }
+
+  @media (max-width: 620px) {
+    .controls { grid-template-columns: 1fr; }
+    .res-row { grid-template-columns: 4.5rem 1fr; grid-template-areas: "g bar" "s avg"; }
+    .res-row .bar-wrap { grid-area: bar; } .res-row .avg { grid-area: avg; text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Registro Escolar</h1>
+      <p>Estudiantes de 6to a 11mo &mdash; ordena por edad, nombre o grado</p>
+    </div>
+    <div class="session" id="session"></div>
+  </header>
+
+  <div class="demo-note">
+    Demostración de solo lectura para el público; los datos viven en tu navegador.
+    Para agregar, editar o borrar entra como administrador &mdash;
+    usuario <code>admin</code>, contraseña <code>admin123</code>.
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-listado" aria-selected="true">Listado</button>
+    <button class="tab" role="tab" id="tab-resumen" aria-selected="false">Resumen por grado</button>
+  </div>
+
+  <!-- ================= LISTADO ================= -->
+  <section id="vista-listado">
+    <div class="controls">
+      <div class="filters">
+        <div class="field" style="flex-basis:100%">
+          <label>Ordenar por</label>
+          <div class="seg" id="seg-orden" role="group" aria-label="Orden">
+            <button data-orden="alfabetico" aria-pressed="true">Alfabético (A&ndash;Z)</button>
+            <button data-orden="edad" aria-pressed="false">Edad &uarr;</button>
+            <button data-orden="edad_desc" aria-pressed="false">Edad &darr;</button>
+            <button data-orden="grado" aria-pressed="false">Grado y sección</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-grado">Grado</label>
+          <select id="f-grado"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label for="f-seccion">Sección</label>
+          <select id="f-seccion"><option value="">Todas</option></select>
+        </div>
+        <div class="field">
+          <label for="f-buscar">Buscar</label>
+          <input type="search" id="f-buscar" placeholder="nombre o apellido">
+        </div>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="primary" id="btn-nuevo" hidden>+ Nuevo estudiante</button>
+      </div>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Apellido</th><th>Nombre</th><th>Edad</th>
+            <th>Grado</th><th>Sección</th><th id="col-acc" hidden>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>Ningún estudiante coincide con el filtro.</div>
+    </div>
+  </section>
+
+  <!-- ================= RESUMEN ================= -->
+  <section id="vista-resumen" hidden>
+    <div class="chips" id="chips-res"></div>
+    <div class="resumen-grid" id="resumen-grid"></div>
+  </section>
+
+  <footer>
+    Versión demo del proyecto
+    <a href="https://github.com/modarox28/gestion-estudiantes" target="_blank" rel="noopener">gestion-estudiantes</a>
+    (Flask + SQLite). Esta página no envía datos a ningún servidor.
+  </footer>
+</div>
+
+<!-- Modal estudiante -->
+<div class="backdrop" id="bd-est" hidden>
+  <form class="modal" id="form-est">
+    <h2 id="form-est-titulo">Nuevo estudiante</h2>
+    <div class="form-error" id="form-est-error" hidden></div>
+    <div class="grid2">
+      <div class="field"><label for="i-nombre">Nombre</label><input type="text" id="i-nombre" required></div>
+      <div class="field"><label for="i-apellido">Apellido</label><input type="text" id="i-apellido" required></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="i-edad">Edad</label><input type="number" id="i-edad" min="1" max="99" required></div>
+      <div class="field"><label for="i-seccion">Sección</label><input type="text" id="i-seccion" maxlength="3" placeholder="A" required></div>
+    </div>
+    <div class="field">
+      <label for="i-grado">Grado</label>
+      <select id="i-grado" required></select>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" data-close>Cancelar</button>
+      <button type="submit" class="primary">Guardar</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal login -->
+<div class="backdrop" id="bd-login" hidden>
+  <form class="modal" id="form-login">
+    <h2>Acceso de administrador</h2>
+    <div class="form-error" id="form-login-error" hidden></div>
+    <div class="field"><label for="i-user">Usuario</label><input type="text" id="i-user" autocomplete="username" required></div>
+    <div class="field"><label for="i-pass">Contraseña</label><input type="password" id="i-pass" autocomplete="current-password" required></div>
+    <p class="hint">Demo: <b>admin</b> / <b>admin123</b></p>
+    <div class="actions">
+      <button type="button" class="ghost" data-close>Cancelar</button>
+      <button type="submit" class="primary">Entrar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var GRADOS = ["6to", "7mo", "8vo", "9no", "10mo", "11mo"];
+  var GRADO_IDX = {}; GRADOS.forEach(function (g, i) { GRADO_IDX[g] = i; });
+  var SECCIONES = ["A", "B"];
+  var ADMIN = { usuario: "admin", password: "admin123" };
+  var LS_DATOS = "registro-escolar-demo:v1";
+  var LS_ADMIN = "registro-escolar-demo:admin";
+
+  // ---------- Datos de ejemplo (deterministas) ----------
+  function seed() {
+    var nombres = ["Ana", "Luis", "María", "Carlos", "Sofía", "Diego", "Valentina",
+      "José", "Camila", "Andrés", "Lucía", "Miguel", "Isabella", "Javier",
+      "Gabriela", "Daniel", "Paula", "Sebastián", "Antonella", "Mateo"];
+    var apellidos = ["González", "Rodríguez", "Pérez", "Martínez", "López",
+      "Sánchez", "Ramírez", "Torres", "Flores", "Rivera", "Gómez", "Díaz",
+      "Vargas", "Castro", "Romero", "Herrera", "Medina", "Aguilar"];
+    var edadBase = { "6to": 11, "7mo": 12, "8vo": 13, "9no": 14, "10mo": 15, "11mo": 16 };
+    var out = [], id = 1, k = 0;
+    GRADOS.forEach(function (g) {
+      SECCIONES.forEach(function (s) {
+        var n = 5 + (k % 3);           // 5..7 por sección
+        for (var j = 0; j < n; j++) {
+          out.push({
+            id: id++,
+            nombre: nombres[(k * 3 + j) % nombres.length],
+            apellido: apellidos[(k * 5 + j) % apellidos.length] + " " +
+                      apellidos[(k * 2 + j + 7) % apellidos.length],
+            edad: edadBase[g] + [(-1), 0, 0, 1, 0][j % 5],
+            grado: g,
+            seccion: s
+          });
+          k++;
+        }
+      });
+    });
+    return out;
+  }
+
+  // ---------- Estado ----------
+  var datos = load();
+  var esAdmin = loadAdmin();
+  var estado = { orden: "alfabetico", grado: "", seccion: "", buscar: "", vista: "listado" };
+  var editandoId = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(LS_DATOS);
+      if (raw) { var p = JSON.parse(raw); if (Array.isArray(p) && p.length) return p; }
+    } catch (e) {}
+    var s = seed();
+    save(s);
+    return s;
+  }
+  function save(arr) {
+    try { localStorage.setItem(LS_DATOS, JSON.stringify(arr || datos)); } catch (e) {}
+  }
+  function loadAdmin() {
+    try { return localStorage.getItem(LS_ADMIN) === "1"; } catch (e) { return false; }
+  }
+  function saveAdmin(v) {
+    try { v ? localStorage.setItem(LS_ADMIN, "1") : localStorage.removeItem(LS_ADMIN); } catch (e) {}
+  }
+  function nextId() {
+    return datos.reduce(function (m, e) { return Math.max(m, e.id); }, 0) + 1;
+  }
+
+  // ---------- Consultas ----------
+  function filtrados() {
+    var q = estado.buscar.trim().toLowerCase();
+    return datos.filter(function (e) {
+      if (estado.grado && e.grado !== estado.grado) return false;
+      if (estado.seccion && e.seccion !== estado.seccion) return false;
+      if (q && (e.nombre + " " + e.apellido).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+  function ordenar(lista) {
+    var arr = lista.slice();
+    var col = new Intl.Collator("es", { sensitivity: "base" });
+    arr.sort(function (a, b) {
+      switch (estado.orden) {
+        case "edad":      return a.edad - b.edad || col.compare(a.apellido, b.apellido);
+        case "edad_desc": return b.edad - a.edad || col.compare(a.apellido, b.apellido);
+        case "grado":
+          return (GRADO_IDX[a.grado] - GRADO_IDX[b.grado]) ||
+                 col.compare(a.seccion, b.seccion) ||
+                 col.compare(a.apellido, b.apellido);
+        default:
+          return col.compare(a.apellido, b.apellido) || col.compare(a.nombre, b.nombre);
+      }
+    });
+    return arr;
+  }
+
+  // ---------- Render ----------
+  var $ = function (s) { return document.querySelector(s); };
+  var tbody = $("#tbody");
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function render() {
+    // selects de filtro
+    fillSelect($("#f-grado"), GRADOS, estado.grado, "Todos");
+    var secc = Array.from(new Set(datos.map(function (e) { return e.seccion; }))).sort();
+    fillSelect($("#f-seccion"), secc, estado.seccion, "Todas");
+    fillSelect($("#i-grado"), GRADOS, null, null);
+
+    $("#f-buscar").value = estado.buscar;
+    Array.prototype.forEach.call($("#seg-orden").children, function (b) {
+      b.setAttribute("aria-pressed", b.dataset.orden === estado.orden ? "true" : "false");
+    });
+
+    // sesión
+    var ses = $("#session");
+    if (esAdmin) {
+      ses.innerHTML = '<span class="who">Sesión: <strong>administrador</strong></span>' +
+        '<button class="ghost" id="btn-logout">Cerrar sesión</button>';
+      $("#btn-logout").onclick = function () { esAdmin = false; saveAdmin(false); render(); };
+    } else {
+      ses.innerHTML = '<button class="ghost" id="btn-login">Entrar como admin</button>';
+      $("#btn-login").onclick = openLogin;
+    }
+    $("#btn-nuevo").hidden = !esAdmin;
+    $("#col-acc").hidden = !esAdmin;
+
+    // tabs
+    $("#tab-listado").setAttribute("aria-selected", estado.vista === "listado");
+    $("#tab-resumen").setAttribute("aria-selected", estado.vista === "resumen");
+    $("#vista-listado").hidden = estado.vista !== "listado";
+    $("#vista-resumen").hidden = estado.vista !== "resumen";
+
+    estado.vista === "resumen" ? renderResumen() : renderListado();
+  }
+
+  function fillSelect(sel, valores, seleccionado, etiquetaVacia) {
+    var actual = seleccionado != null ? seleccionado : sel.value;
+    sel.innerHTML = "";
+    if (etiquetaVacia != null) sel.add(new Option(etiquetaVacia, ""));
+    valores.forEach(function (v) { sel.add(new Option(v, v)); });
+    sel.value = actual;
+  }
+
+  function renderListado() {
+    var lista = ordenar(filtrados());
+    tbody.innerHTML = lista.map(function (e, i) {
+      var acc = esAdmin
+        ? '<td class="acciones">' +
+            '<button class="linkish" data-edit="' + e.id + '">Editar</button>' +
+            '<button class="linkish danger" data-del="' + e.id + '">Borrar</button></td>'
+        : "";
+      return "<tr>" +
+        '<td class="num">' + (i + 1) + "</td>" +
+        "<td>" + esc(e.apellido) + "</td>" +
+        "<td>" + esc(e.nombre) + "</td>" +
+        '<td class="num">' + e.edad + "</td>" +
+        "<td>" + esc(e.grado) + "</td>" +
+        '<td><span class="badge">' + esc(e.seccion) + "</span></td>" +
+        acc + "</tr>";
+    }).join("");
+    $("#empty").hidden = lista.length !== 0;
+
+    var total = lista.length;
+    var prom = total ? (lista.reduce(function (s, e) { return s + e.edad; }, 0) / total) : 0;
+    var chips = $("#chips");
+    chips.innerHTML =
+      '<span class="chip lead"><b>' + total + "</b> estudiante" + (total === 1 ? "" : "s") + "</span>" +
+      (total ? '<span class="chip">edad promedio <b>' + prom.toFixed(1) + "</b></span>" : "") +
+      GRADOS.map(function (g) {
+        var c = lista.filter(function (e) { return e.grado === g; }).length;
+        return c ? '<span class="chip">' + g + " <b>" + c + "</b></span>" : "";
+      }).join("");
+  }
+
+  function renderResumen() {
+    var grupos = {};
+    datos.forEach(function (e) {
+      var key = e.grado + "|" + e.seccion;
+      (grupos[key] = grupos[key] || []).push(e);
+    });
+    var filas = Object.keys(grupos).map(function (k) {
+      var p = k.split("|"), arr = grupos[k];
+      return {
+        grado: p[0], seccion: p[1], total: arr.length,
+        promedio: arr.reduce(function (s, e) { return s + e.edad; }, 0) / arr.length
+      };
+    }).sort(function (a, b) {
+      return (GRADO_IDX[a.grado] - GRADO_IDX[b.grado]) || a.seccion.localeCompare(b.seccion);
+    });
+
+    var max = filas.reduce(function (m, f) { return Math.max(m, f.total); }, 1);
+    $("#resumen-grid").innerHTML = filas.map(function (f) {
+      var pct = Math.round((f.total / max) * 100);
+      return '<div class="res-row">' +
+        '<div class="g">' + f.grado + "</div>" +
+        '<div class="s">' + f.seccion + "</div>" +
+        '<div class="bar-wrap"><div class="bar-track">' +
+          '<div class="bar-fill" style="width:' + pct + '%"></div>' +
+          '<span class="bar-label">' + f.total + "</span>" +
+        "</div></div>" +
+        '<div class="avg">x&#772; <b>' + f.promedio.toFixed(1) + "</b></div>" +
+      "</div>";
+    }).join("");
+
+    var total = datos.length;
+    var prom = total ? datos.reduce(function (s, e) { return s + e.edad; }, 0) / total : 0;
+    $("#chips-res").innerHTML =
+      '<span class="chip lead"><b>' + total + "</b> estudiantes en total</span>" +
+      '<span class="chip">' + filas.length + " grupos</span>" +
+      '<span class="chip">edad promedio general <b>' + prom.toFixed(1) + "</b></span>";
+  }
+
+  // ---------- Eventos ----------
+  $("#seg-orden").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-orden]");
+    if (b) { estado.orden = b.dataset.orden; render(); }
+  });
+  $("#f-grado").addEventListener("change", function () { estado.grado = this.value; render(); });
+  $("#f-seccion").addEventListener("change", function () { estado.seccion = this.value; render(); });
+  $("#f-buscar").addEventListener("input", function () { estado.buscar = this.value; renderListado(); });
+
+  $("#tab-listado").addEventListener("click", function () { estado.vista = "listado"; render(); });
+  $("#tab-resumen").addEventListener("click", function () { estado.vista = "resumen"; render(); });
+
+  tbody.addEventListener("click", function (ev) {
+    var ed = ev.target.closest("button[data-edit]");
+    var dl = ev.target.closest("button[data-del]");
+    if (ed) openEst(Number(ed.dataset.edit));
+    if (dl) borrar(Number(dl.dataset.del));
+  });
+
+  $("#btn-nuevo").addEventListener("click", function () { openEst(null); });
+
+  // ---------- Modal estudiante ----------
+  function openEst(id) {
+    if (!esAdmin) return;
+    editandoId = id;
+    var e = id != null ? datos.find(function (x) { return x.id === id; }) : null;
+    $("#form-est-titulo").textContent = e ? "Editar estudiante" : "Nuevo estudiante";
+    $("#i-nombre").value = e ? e.nombre : "";
+    $("#i-apellido").value = e ? e.apellido : "";
+    $("#i-edad").value = e ? e.edad : "";
+    $("#i-seccion").value = e ? e.seccion : "";
+    $("#i-grado").value = e ? e.grado : GRADOS[0];
+    hide($("#form-est-error"));
+    show($("#bd-est"));
+    $("#i-nombre").focus();
+  }
+
+  $("#form-est").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var nombre = $("#i-nombre").value.trim();
+    var apellido = $("#i-apellido").value.trim();
+    var edad = parseInt($("#i-edad").value, 10);
+    var grado = $("#i-grado").value;
+    var seccion = $("#i-seccion").value.trim().toUpperCase();
+    var err = null;
+    if (!nombre || !apellido) err = "El nombre y el apellido son obligatorios.";
+    else if (!(edad >= 1 && edad <= 99)) err = "La edad debe estar entre 1 y 99.";
+    else if (GRADOS.indexOf(grado) === -1) err = "Selecciona un grado válido.";
+    else if (!seccion || seccion.length > 3) err = "La sección es obligatoria (ej: A, B).";
+    if (err) { var box = $("#form-est-error"); box.textContent = err; show(box); return; }
+
+    if (editandoId != null) {
+      var e = datos.find(function (x) { return x.id === editandoId; });
+      Object.assign(e, { nombre: nombre, apellido: apellido, edad: edad, grado: grado, seccion: seccion });
+    } else {
+      datos.push({ id: nextId(), nombre: nombre, apellido: apellido, edad: edad, grado: grado, seccion: seccion });
+    }
+    save();
+    hide($("#bd-est"));
+    render();
+  });
+
+  function borrar(id) {
+    if (!esAdmin) return;
+    var e = datos.find(function (x) { return x.id === id; });
+    if (!e) return;
+    if (!confirm("¿Eliminar a " + e.nombre + " " + e.apellido + "?")) return;
+    datos = datos.filter(function (x) { return x.id !== id; });
+    save();
+    render();
+  }
+
+  // ---------- Modal login ----------
+  function openLogin() {
+    $("#i-user").value = ""; $("#i-pass").value = "";
+    hide($("#form-login-error"));
+    show($("#bd-login"));
+    $("#i-user").focus();
+  }
+  $("#form-login").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var u = $("#i-user").value, p = $("#i-pass").value;
+    if (u === ADMIN.usuario && p === ADMIN.password) {
+      esAdmin = true; saveAdmin(true);
+      hide($("#bd-login"));
+      render();
+    } else {
+      var box = $("#form-login-error");
+      box.textContent = "Usuario o contraseña incorrectos.";
+      show(box);
+    }
+  });
+
+  // ---------- Utilidades de modal ----------
+  function show(el) { el.hidden = false; }
+  function hide(el) { el.hidden = true; }
+  document.querySelectorAll("[data-close]").forEach(function (b) {
+    b.addEventListener("click", function () { hide(b.closest(".backdrop")); });
+  });
+  document.querySelectorAll(".backdrop").forEach(function (bd) {
+    bd.addEventListener("click", function (ev) { if (ev.target === bd) hide(bd); });
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "Escape") document.querySelectorAll(".backdrop").forEach(hide);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

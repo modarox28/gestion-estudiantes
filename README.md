@@ -7,6 +7,16 @@ resumen por grado/sección.
 Los grados van de **6to a 11mo** (6 grados) y cada grado admite varias secciones
 (`7mo A`, `7mo B`, …).
 
+## 🔗 Demo en vivo
+
+**https://modarox28.github.io/gestion-estudiantes/**
+
+Versión de demostración que corre 100 % en el navegador (los datos se guardan en
+`localStorage`, no hay servidor). Para probar el modo administrador:
+usuario `admin`, contraseña `admin123`.
+
+La aplicación real de esta demo es la de Flask + SQLite descrita abajo.
+
 ## Características
 
 - Alta, edición y borrado de estudiantes (nombre, apellido, edad, grado, sección).
