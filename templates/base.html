@@ -12,7 +12,14 @@
     <nav>
       <a href="{{ url_for('index') }}">Listado</a>
       <a href="{{ url_for('resumen') }}">Resumen por grado</a>
-      <a class="btn" href="{{ url_for('nuevo') }}">+ Nuevo estudiante</a>
+      {% if es_admin %}
+        <a class="btn" href="{{ url_for('nuevo') }}">+ Nuevo estudiante</a>
+        <form method="post" action="{{ url_for('logout') }}">
+          <button class="link-danger" type="submit">Cerrar sesión</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('login') }}">Entrar (admin)</a>
+      {% endif %}
     </nav>
   </header>
 

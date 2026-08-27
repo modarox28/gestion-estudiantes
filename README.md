@@ -16,7 +16,26 @@ Los grados van de **6to a 11mo** (6 grados) y cada grado admite varias secciones
   - Grado y sección
 - Filtros por grado y sección + búsqueda por nombre/apellido.
 - Página de **resumen**: total de estudiantes y edad promedio por grado y sección.
+- **Login de administrador**: agregar, editar y borrar requiere sesión. Cualquiera
+  puede consultar y ordenar el listado; solo el admin modifica datos.
 - Base de datos SQLite creada automáticamente al arrancar.
+
+## Acceso de administrador
+
+Credenciales por defecto (¡cámbialas en producción!):
+
+| Usuario | Contraseña |
+|---------|------------|
+| `admin` | `admin123` |
+
+Para cambiarlas, define variables de entorno antes de arrancar:
+
+```bash
+export ADMIN_USUARIO="miusuario"
+export ADMIN_PASSWORD="una-clave-larga"
+export SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+flask --app app run
+```
 
 ## Stack
 
@@ -59,12 +78,12 @@ La base de datos se guarda en `instance/estudiantes.db` (ignorada por git).
 
 ```
 gestion-estudiantes/
-├── app.py            # rutas y validación
+├── app.py            # rutas, login de admin y validación
 ├── db.py             # conexión y consultas SQLite
 ├── schema.sql        # esquema de la tabla estudiantes
 ├── seed.py           # datos de ejemplo
 ├── requirements.txt
-├── templates/        # base, index, form, resumen
+├── templates/        # base, index, form, resumen, login
 └── static/style.css
 ```
 

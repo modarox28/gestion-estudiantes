@@ -34,6 +34,7 @@ header h1 { font-size: 1.25rem; margin: 0; }
 header h1 a { color: var(--texto); text-decoration: none; }
 
 nav { display: flex; gap: 1rem; align-items: center; }
+nav form { display: inline; margin: 0; }
 nav a { color: var(--azul); text-decoration: none; font-size: .95rem; }
 nav a:hover { text-decoration: underline; }
 

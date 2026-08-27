@@ -1,8 +1,10 @@
 """Aplicación web de gestión de estudiantes (Flask + SQLite)."""
+import hmac
 import os
+from functools import wraps
 
 from flask import (
-    Flask, flash, redirect, render_template, request, url_for
+    Flask, flash, redirect, render_template, request, session, url_for
 )
 
 import db
@@ -16,9 +18,29 @@ def create_app():
         DATABASE=os.environ.get(
             "DATABASE", os.path.join(app.instance_path, "estudiantes.db")
         ),
+        # Credenciales del administrador (cámbialas con variables de entorno).
+        ADMIN_USUARIO=os.environ.get("ADMIN_USUARIO", "admin"),
+        ADMIN_PASSWORD=os.environ.get("ADMIN_PASSWORD", "admin123"),
     )
     os.makedirs(app.instance_path, exist_ok=True)
     db.init_app(app)
+
+    # ---- Autenticación de administrador ------------------------------------
+    def es_admin():
+        return session.get("admin") is True
+
+    def login_required(vista):
+        @wraps(vista)
+        def envoltura(*args, **kwargs):
+            if not es_admin():
+                flash("Inicia sesión como administrador para hacer eso.", "error")
+                return redirect(url_for("login", next=request.path))
+            return vista(*args, **kwargs)
+        return envoltura
+
+    @app.context_processor
+    def inyectar_admin():
+        return {"es_admin": es_admin()}
 
     # Crea la BD automáticamente si no existe.
     with app.app_context():
@@ -57,7 +79,31 @@ def create_app():
     def resumen():
         return render_template("resumen.html", filas=db.resumen_por_grado())
 
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        destino = request.args.get("next") or url_for("index")
+        if es_admin():
+            return redirect(destino)
+        if request.method == "POST":
+            usuario = request.form.get("usuario", "")
+            password = request.form.get("password", "")
+            ok_u = hmac.compare_digest(usuario, app.config["ADMIN_USUARIO"])
+            ok_p = hmac.compare_digest(password, app.config["ADMIN_PASSWORD"])
+            if ok_u and ok_p:
+                session["admin"] = True
+                flash("Sesión iniciada como administrador.", "ok")
+                return redirect(destino)
+            flash("Usuario o contraseña incorrectos.", "error")
+        return render_template("login.html")
+
+    @app.route("/logout", methods=["POST"])
+    def logout():
+        session.pop("admin", None)
+        flash("Sesión cerrada.", "ok")
+        return redirect(url_for("index"))
+
     @app.route("/nuevo", methods=["GET", "POST"])
+    @login_required
     def nuevo():
         if request.method == "POST":
             datos, error = _leer_formulario(request.form)
@@ -72,6 +118,7 @@ def create_app():
         )
 
     @app.route("/editar/<int:est_id>", methods=["GET", "POST"])
+    @login_required
     def editar(est_id):
         estudiante = db.obtener_estudiante(est_id)
         if estudiante is None:
@@ -92,6 +139,7 @@ def create_app():
         )
 
     @app.route("/borrar/<int:est_id>", methods=["POST"])
+    @login_required
     def borrar(est_id):
         db.borrar_estudiante(est_id)
         flash("Estudiante eliminado.", "ok")

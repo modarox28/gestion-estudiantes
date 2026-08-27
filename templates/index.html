@@ -55,7 +55,7 @@
       <th>Edad</th>
       <th>Grado</th>
       <th>Sección</th>
-      <th></th>
+      {% if es_admin %}<th></th>{% endif %}
     </tr>
   </thead>
   <tbody>
@@ -67,6 +67,7 @@
       <td>{{ e['edad'] }}</td>
       <td>{{ e['grado'] }}</td>
       <td>{{ e['seccion'] }}</td>
+      {% if es_admin %}
       <td class="acciones">
         <a href="{{ url_for('editar', est_id=e['id']) }}">Editar</a>
         <form method="post" action="{{ url_for('borrar', est_id=e['id']) }}"
@@ -74,6 +75,7 @@
           <button class="link-danger" type="submit">Borrar</button>
         </form>
       </td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>
