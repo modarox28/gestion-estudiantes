@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Gestión de Estudiantes{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1><a href="{{ url_for('index') }}">🎓 Gestión de Estudiantes</a></h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Listado</a>
+      <a href="{{ url_for('resumen') }}">Resumen por grado</a>
+      <a class="btn" href="{{ url_for('nuevo') }}">+ Nuevo estudiante</a>
+    </nav>
+  </header>
+
+  <main>
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% for categoria, texto in mensajes %}
+        <div class="flash flash-{{ categoria }}">{{ texto }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Proyecto de ejemplo · Flask + SQLite</p>
+  </footer>
+</body>
+</html>

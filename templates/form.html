@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ accion }}{% endblock %}
+{% block contenido %}
+
+<h2>{{ accion }}</h2>
+
+<form class="tarjeta" method="post">
+  <label for="nombre">Nombre</label>
+  <input id="nombre" name="nombre" required
+         value="{{ estudiante['nombre'] if estudiante else '' }}">
+
+  <label for="apellido">Apellido</label>
+  <input id="apellido" name="apellido" required
+         value="{{ estudiante['apellido'] if estudiante else '' }}">
+
+  <label for="edad">Edad</label>
+  <input id="edad" name="edad" type="number" min="1" max="99" required
+         value="{{ estudiante['edad'] if estudiante else '' }}">
+
+  <label for="grado">Grado</label>
+  <select id="grado" name="grado" required>
+    <option value="" disabled {{ 'selected' if not estudiante }}>Selecciona…</option>
+    {% for g in grados %}
+      <option value="{{ g }}"
+        {{ 'selected' if estudiante and estudiante['grado'] == g }}>{{ g }}</option>
+    {% endfor %}
+  </select>
+
+  <label for="seccion">Sección</label>
+  <input id="seccion" name="seccion" required maxlength="3" placeholder="A"
+         value="{{ estudiante['seccion'] if estudiante else '' }}">
+
+  <div class="botones">
+    <button type="submit">Guardar</button>
+    <a class="cancelar" href="{{ url_for('index') }}">Cancelar</a>
+  </div>
+</form>
+
+{% endblock %}

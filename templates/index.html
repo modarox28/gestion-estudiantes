@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block contenido %}
+
+<form class="filtros" method="get" action="{{ url_for('index') }}">
+  <div>
+    <label for="orden">Ordenar por</label>
+    <select id="orden" name="orden" onchange="this.form.submit()">
+      <option value="alfabetico" {{ 'selected' if orden == 'alfabetico' }}>Orden alfabético (A-Z)</option>
+      <option value="edad" {{ 'selected' if orden == 'edad' }}>Edad (menor a mayor)</option>
+      <option value="edad_desc" {{ 'selected' if orden == 'edad_desc' }}>Edad (mayor a menor)</option>
+      <option value="grado" {{ 'selected' if orden == 'grado' }}>Grado y sección</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="grado">Grado</label>
+    <select id="grado" name="grado" onchange="this.form.submit()">
+      <option value="">Todos</option>
+      {% for g in grados %}
+        <option value="{{ g }}" {{ 'selected' if grado == g }}>{{ g }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label for="seccion">Sección</label>
+    <select id="seccion" name="seccion" onchange="this.form.submit()">
+      <option value="">Todas</option>
+      {% for s in secciones %}
+        <option value="{{ s }}" {{ 'selected' if seccion == s }}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="crece">
+    <label for="buscar">Buscar</label>
+    <input id="buscar" name="buscar" type="search" value="{{ buscar }}" placeholder="nombre o apellido">
+  </div>
+
+  <div>
+    <label>&nbsp;</label>
+    <button type="submit">Aplicar</button>
+  </div>
+</form>
+
+<p class="conteo">{{ estudiantes|length }} estudiante(s)</p>
+
+{% if estudiantes %}
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Apellido</th>
+      <th>Nombre</th>
+      <th>Edad</th>
+      <th>Grado</th>
+      <th>Sección</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in estudiantes %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ e['apellido'] }}</td>
+      <td>{{ e['nombre'] }}</td>
+      <td>{{ e['edad'] }}</td>
+      <td>{{ e['grado'] }}</td>
+      <td>{{ e['seccion'] }}</td>
+      <td class="acciones">
+        <a href="{{ url_for('editar', est_id=e['id']) }}">Editar</a>
+        <form method="post" action="{{ url_for('borrar', est_id=e['id']) }}"
+              onsubmit="return confirm('¿Eliminar a {{ e['nombre'] }} {{ e['apellido'] }}?');">
+          <button class="link-danger" type="submit">Borrar</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="vacio">No hay estudiantes que coincidan. <a href="{{ url_for('nuevo') }}">Agrega uno</a>.</p>
+{% endif %}
+
+{% endblock %}

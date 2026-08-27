@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Resumen por grado{% endblock %}
+{% block contenido %}
+
+<h2>Resumen por grado y sección</h2>
+
+{% if filas %}
+<table>
+  <thead>
+    <tr>
+      <th>Grado</th>
+      <th>Sección</th>
+      <th>Estudiantes</th>
+      <th>Edad promedio</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in filas %}
+    <tr>
+      <td>{{ f['grado'] }}</td>
+      <td>{{ f['seccion'] }}</td>
+      <td>{{ f['total'] }}</td>
+      <td>{{ f['edad_promedio'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="vacio">Todavía no hay datos.</p>
+{% endif %}
+
+{% endblock %}
